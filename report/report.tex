@@ -1,0 +1,74 @@
+\documentclass{article}
+
+\usepackage{tmparticle}
+
+\title{《编译原理》课程PJ}
+\author{\ldots}
+\date{\today}
+
+\begin{document}
+\section{项目要求} % (fold)
+\label{sec:项目要求}
+\begin{enumerate}
+  \item 使用flex \& bison 完成对PCAT语言的语法树的建立,并将语法树打印出来
+  \item 具有语法报错功能并提示错误位置
+\end{enumerate}
+
+% section 项目要求 (end)
+\section{实现原理} % (fold)
+\label{sec:实现原理}
+这部分的实现主要包含两个部分，词法解析和文法解析。
+
+\subsection{词法解析} % (fold)
+\label{sub:词法解析}
+词法解析主要由flex 实现，代码见tokenizer.h、tokenizer.l。\par
+flex 是一个自动化工具，可以按照定义好的规则自动生成一个C 函数yylex()，也称为扫描器。这个C 函数把文本串作为输入，a按照定义好的规则分析文本串中的字符，找到符合规则的一些字符序列后，就执行在规则中定义好的动作。我们定义了行位置变量ln和列位置变量col，以便记录位置。\par
+对于关键词（AND|ELSIF|LOOP|PROGRAM|VAR|ARRAY|END|MOD|READ|WHILE|BEGIN|EXIT|NOT|RECORD|WRITE|BY|FOR|OF|RETURN|DIV|IF|OR|THEN|DO|IN|OUT|TO|ELSE|IS|PROCEDURE|TYPE），相应的操作是输出当前行列位置，判断为关键词，增加记录的行号/列号，并保存特定的token信息来构建语法树。\par
+对于关键词（AND|ELSIF|LOOP|PROGRAM|VAR|ARRAY|END|MOD|READ|WHILE|BEGIN|EXIT|NOT|RECORD|WRITE|BY|FOR|OF|RETURN|DIV|IF|OR|THEN|DO|IN|OUT|TO|ELSE|IS|PROCEDURE|TYPE），相应的操作是输出当前行列位置，判断为关键词，增加记录的行号/列号，并保存特定的token信息来构建语法树。\par
+
+% subsection 词法解析 (end)
+\subsection{文法分析} % (fold)
+\label{sub:文法分析}
+文法分析主要由bison实现，代码详见main.y。\par
+bison是一个语法分析器生成器，可以把一个上下文无关文法的描述通过LALR(1)转化成可以分析该文法的 C 或 C++ 程序。在进行语法分析时，主要是利用其生成的yyparse函数，对FILE*类型的ffin进行语法解析，当发现解析错误时，会调用yyerror函数。这部分主要有三个步骤，文法构建、语法树分析、语法查错。\par
+\subsubsection{文法构建} % (fold)
+\label{ssub:文法构建}
+PCAT语言的文法构建参见其说明文件(第 \number\numexpr\value{page}+1 页)。在进行构建时，要进行两个转化：\par
+形如TOKEN\{, TOKEN\}的通过新建一个TOKEN\_block来表示，其中TOKEN\_block定义为：\par
+\[
+\begin{array}[h]{lll}
+  TOKEN\_block & -> & TOKEN\_block ',' TOKEN\\
+  & -> & TOKEN
+\end{array}
+\]
+形如[TOKEN]的通过新建一个TOKEN\_opt来表示，其中TOKEN\_opt定义为：\par
+\[
+\begin{array}[h]{lll}
+  TOKEN\_opt & -> & TOKEN\\
+  & -> & 
+\end{array}
+\]
+这样，就可以将PCAT的文法转成bison接受的格式，bison会根据这个进行自动分析，在匹配到对应的文法时，执行一定的内容，我们在这里加入语法树的构建即可。
+
+% subsubsection 文法构建 (end)
+\subsubsection{语法树构建} % (fold)
+\label{ssub:语法树构建}
+根据上述的定义，在程序中，每个语法树的节点也就是每个符号，对应了一个类。例如在syntax.h的实现中，class Number对应number类，class UnaryOpExpr对应unary-op类，等等。如果在语法里，符号a能产生符号b，那么在a定义的类就包含一个b对象。当bison产生的语法分析器执行action（写在main.y的语法定义部分）时，语法树就被建立起来。\par
+
+
+\subsubsection{语法查错} % (fold)
+\label{ssub:语法查错}
+在syntax.h的最后，对于Program对应的节点，调用void print(int ident) 把整个语法树打印出来。打印的内容详见每一个class中的void print函数代码。\par
+
+% subsubsection 语法树构建 (end)
+
+% subsubsection 语法查错 (end)
+
+% subsection 文法分析 (end)
+
+% section 实现原理 (end)
+\section{小组分工} % (fold)
+\label{sec:小组分工}
+吴韫聪（代码之phrase部分+报告）、朱天歌（代码之语法树部分+报告）、兰石懿（测试）、王禹程（测试）
+% section 小组分工 (end)
+\end{document}
