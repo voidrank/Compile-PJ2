@@ -25,7 +25,7 @@ void yyerror(const char *s);
 %token IDENTIFIER
 %token-table // keywords and delimiters are literal strings
 
-%define parse.error verbose 
+//%define parse.error verbose 
 %%
 
 program: "PROGRAM" "IS" body ";" 
@@ -349,7 +349,7 @@ expr_block: expr "," expr_block
 ;
 expr_opt: expr { $$=$1; }| {$$=NULL;};
 
-lvalue: IDENTIFIER { $$ = new IdLvalue((Id*)$1); } |
+lvalue: IDENTIFIER { $$ = new IdLvalue(*((Id*)$1)); } |
 lvalue "[" expr "]" { $$ = new ArrayLvalue((Lvalue*)$1, (Expr*)$3); } |
 lvalue "." IDENTIFIER { $$ = new RecordLvalue((Lvalue*)$1, (Id*)$3); } ;
 
@@ -391,8 +391,8 @@ array_value: expr "OF" expr
 { $$ = new OfArrayValue((Expr*)$1, (Expr*)$3); }
 | expr { $$ = new SimpleArrayValue((Expr*)$1); };
 
-number: REAL { $$ = new NumberExpr((Number*)$1); } 
-| INTEGER { $$ = new NumberExpr((Number*)$1); } ;
+number: REAL { $$ = new NumberExpr((Number*)$1, 0); } 
+| INTEGER { $$ = new NumberExpr((Number*)$1, 1); } ;
 
 unary_op:  OPERATOR { $$ = $1; } | "NOT" { $$ = new Op("NOT"); };
 

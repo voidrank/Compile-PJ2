@@ -13,7 +13,7 @@ MAINBIN = build/bin/main
 CFLAG = -I "src"
 
 main: $(BUILD_DIR) $(BIN_DIR) $(MAINCC) $(TOKENIZERCC) src/syntax.h
-	$(GCC) -g $(MAINCC) $(TOKENIZERCC) -lfl -o $(MAINBIN) $(CFLAG)
+	$(GCC) -g $(MAINCC) $(TOKENIZERCC) -ll -o $(MAINBIN) $(CFLAG)
 
 $(BUILD_DIR): 
 	$(MKDIR_P) $(BUILD_DIR)

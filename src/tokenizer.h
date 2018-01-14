@@ -1,3 +1,5 @@
+#ifndef TOKENIZER
+#define TOKENIZER
 #define MAX_INT "2147483647"
 #define INT_OVERFLOW 1
 
@@ -9,3 +11,4 @@ int check_integer(char *int_str);
 
 int check_string(char *str);
 
+#endif
