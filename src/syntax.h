@@ -10,6 +10,7 @@ using namespace std;
 
 const int BASE = 0x00100000;
 static int accum_base = BASE;
+static int stack_top = 0x10000000;
 
 class Node {
 public:
@@ -301,7 +302,8 @@ public:
 
     int eval_print(int indent) {
       int reg_id = find_unused_reg();
-      cout << string(indent, ' ') << "load $t" << reg_id << " #";
+      cout << string(indent, ' ') << "load $t" << reg_id;
+      cout << " #";
       n->print();
       cout << endl;
       return reg_id;
@@ -611,7 +613,7 @@ public:
     void print (int indent) {
         cout << string(indent, ' ') << "PRINT ";
         write_params->print(indent);
-        cout << string(indent, ' ') << "PRINT $t0" << endl;
+        //cout << string(indent, ' ') << "PRINT $t0" << endl;
     }
 
     void print() {
@@ -628,7 +630,7 @@ public:
         int jump_id = jump_accum;
         jump_accum += 1;
         int reg_id = cond->eval_print(indent);
-        cout << string(indent, ' ') << "jne " << reg_id << " L" << jump_id << endl;
+        cout << string(indent, ' ') << "jne $t" << reg_id << " L" << jump_id << endl;
         for (int i = 0; i < then->nodes.size(); ++i)
             then->nodes[i]->print(indent);
         cout << string(indent, ' ') << "L" << jump_id << ": " << endl;
@@ -659,7 +661,7 @@ public:
         if (elseif) {
           elseif->print(indent);
         }
-        else if (else_) {
+        if (else_) {
           else_->print(indent);
         }
  

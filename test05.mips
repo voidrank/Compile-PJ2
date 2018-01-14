@@ -1,0 +1,58 @@
+.data
+I  4 00000000
+C  16 0x0000000000000000 0x0000000000000000 
+P  32 0x0000000000000000 0x0000000000000000  0x0000000000000000 0x0000000000000000  
+.sub
+L0: 
+  .data
+  .text
+    PRINT     "    ("
+    load $t0 0x00100004
+    PRINT $t0
+    PRINT ", "
+    load $t0 0x0010000c
+    PRINT $t0
+    PRINT ")"
+    pop $t0
+    jr $t0
+.text
+  load $t0 #0x000000003ff00000
+  store $t0 0x00100004
+  load $t0 #0x0000000000000000
+  store $t0 0x0010000a
+  load $t0 0x00100014
+  store $t0 0x00100004
+  load $t0 #0x0000000000000000
+  store $t0 0x00100004
+  load $t0 #0x000000003ff00000
+  store $t0 0x0010000a
+  load $t0 0x00100014
+  store $t0 0x00100004
+  load $t0 0x0010000a
+  store $t0 0x0010000a
+  PRINT   "The first complex number should be (1.0, 0.0):"
+  push current_line
+  j L0
+  load $t0 0x0010001a
+  store $t0 0x00100004
+  PRINT   "The second complex number should be (0.0, 1.0):"
+  push current_line
+  j L0
+  load $t0 0x0010001a
+  load $t1 0x00100024
+  neq $t0 $t1 $t2
+  jne 2 L1
+  PRINT   "and these two complex numbers are not equal!"
+  L1: 
+  load $t0 0x00100032
+  load $t1 0x0010003a
+  neq $t0 $t1 $t3
+  jne $t3 L2
+  PRINT   "and these two complex numbers are not equal!"
+  L2: 
+  load $t0 0x0010001a
+  load $t1 0x00100014
+  neq $t0 $t1 $t4
+  jne $t4 L3
+  PRINT   "and these two complex numbers are equal!"
+  L3: 
